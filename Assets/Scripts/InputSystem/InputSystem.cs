@@ -17,7 +17,7 @@ namespace InputSystem {
 
         //==================================================||Properties 
         public KeyCode this[Actions action] =>
-            EnumExtension.IsFlag(action) ? _keyBind[action].Key : KeyCode.None;
+            ExEnum.IsFlag(action) ? _keyBind[action].Key : KeyCode.None;
 
         public Actions GetKey =>
             CurrentKey(Input.GetKey);

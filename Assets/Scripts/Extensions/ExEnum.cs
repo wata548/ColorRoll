@@ -4,7 +4,7 @@ using UnityEngine.Rendering;
 
 namespace Extensions {
 
-    public static class EnumExtension {
+    public static class ExEnum {
         public static bool IsFlag<T>(T data) 
             where T: struct, IConvertible
         {
