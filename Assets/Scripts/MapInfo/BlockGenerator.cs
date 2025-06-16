@@ -32,18 +32,23 @@ namespace MapInfo {
             for (int i = 0; i < Thickness; i++) {
                 for (int j = startPos1; j < startPos2 + Thickness; j++) {
                     var pos = new Vector3(startPos1 + i, Height, j);
-                    if (!_blocks.ContainsKey(pos))
-                        _blocks[pos] = Instantiate(_prefab, pos, Quaternion.identity);
+                    TryAdd(pos);
+                    
                     pos = new Vector3(startPos2 + i, Height, j);
-                    if (!_blocks.ContainsKey(pos))
-                        _blocks[pos] = Instantiate(_prefab, pos, Quaternion.identity);
+                    TryAdd(pos);
+                    
                     pos = new Vector3(j, Height, startPos1 + i);
-                    if (!_blocks.ContainsKey(pos))
-                        _blocks[pos] = Instantiate(_prefab, pos, Quaternion.identity);
+                    TryAdd(pos);
+                    
                     pos = new Vector3(j, Height, startPos2 + i);
-                    if (!_blocks.ContainsKey(pos))
-                        _blocks[pos] = Instantiate(_prefab, pos, Quaternion.identity);
+                    TryAdd(pos);
+
                 }
+            }
+
+            void TryAdd(Vector3 pos) {
+                if (!_blocks.ContainsKey(pos))
+                    _blocks[pos] = Instantiate(_prefab, pos, Quaternion.identity);
             }
         }
 
