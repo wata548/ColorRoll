@@ -16,6 +16,8 @@ namespace Extensions {
             }
 
             int value = data.ToInt32(null);
+            if (value == 0)
+                return false;
             return (value & (value - 1)) == 0;
         }
     }

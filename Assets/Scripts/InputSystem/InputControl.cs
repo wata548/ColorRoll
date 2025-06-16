@@ -7,29 +7,62 @@ using Extensions;
 using UnityEngine;
 
 namespace InputSystem {
-    public class InputSystem {
+    public class InputControl {
 
         //==================================================||Constance
         private const string KeyBindFolder = "KeyBind";
         
         //==================================================||Fields 
-        private Dictionary<Actions, KeyBindRow> _keyBind = new();
+        private Dictionary<Actions, KeyBindRow> _keyBind;
+        private int _lastUpdateFrame = -1;
+        
+        private Actions _key;
+        private Actions _keyDown;
+        private Actions _keyUp;
 
         //==================================================||Properties 
         public KeyCode this[Actions action] =>
             ExEnum.IsFlag(action) ? _keyBind[action].Key : KeyCode.None;
 
-        public Actions GetKey =>
-            CurrentKey(Input.GetKey);
+        public Actions GetKey {
+            get {
+                Update();
+                return _key;
+            }
+        }
 
-        public Actions GetKeyDown =>
-            CurrentKey(Input.GetKeyDown);
+        public Actions GetKeyDown {
+            get {
+                Update();
+                return _keyDown;
+            }
+        }
 
-        public Actions GetKeyUp =>
-            CurrentKey(Input.GetKeyUp);
+        public Actions GetKeyUp {
+            get {
+                Update();
+                return _keyUp;
+            }
+        }
        
+        //==================================================||Constructor
+        public InputControl(string path) =>
+            SetKeyBind(path);
+        public InputControl(TextAsset asset) =>
+            SetKeyBind(asset);
+        
         //==================================================||Methods
 
+        public void Update() {
+            if (_lastUpdateFrame == Time.frameCount)
+                return;
+
+            _lastUpdateFrame = Time.frameCount;
+            _key        = CurrentKey(Input.GetKey);
+            _keyUp      = CurrentKey(Input.GetKeyUp);
+            _keyDown    = CurrentKey(Input.GetKeyDown);
+        }
+        
         public Actions CurrentKey(Func<KeyCode, bool> condition) {
             
             var result = Actions.None;
@@ -67,7 +100,7 @@ namespace InputSystem {
                 return;
             
             var rawCsvData = File.ReadAllText(path);
-            var tempSetting = CSV.DeserializeToDictionary<KeyBindRow>(rawCsvData, "Key") 
+            _keyBind = CSV.DeserializeToDictionary<KeyBindRow>(rawCsvData, "Action") 
                 as Dictionary<Actions, KeyBindRow>;
         }
 

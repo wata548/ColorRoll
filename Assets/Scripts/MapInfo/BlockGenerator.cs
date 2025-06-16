@@ -8,6 +8,7 @@ namespace MapInfo {
         private const int DefaultMapScale = 4;
         private const int Thickness = 2;
         private const int MaxDeepth = 10;
+        private const float Height = 0.5f;
         
         private Dictionary<Vector3, GameObject> _blocks = new();
         [SerializeField] private GameObject _prefab;
@@ -30,16 +31,16 @@ namespace MapInfo {
             
             for (int i = 0; i < Thickness; i++) {
                 for (int j = startPos1; j < startPos2 + Thickness; j++) {
-                    var pos = new Vector3(startPos1 + i, 0, j);
+                    var pos = new Vector3(startPos1 + i, Height, j);
                     if (!_blocks.ContainsKey(pos))
                         _blocks[pos] = Instantiate(_prefab, pos, Quaternion.identity);
-                    pos = new Vector3(startPos2 + i, 0, j);
+                    pos = new Vector3(startPos2 + i, Height, j);
                     if (!_blocks.ContainsKey(pos))
                         _blocks[pos] = Instantiate(_prefab, pos, Quaternion.identity);
-                    pos = new Vector3(j, 0, startPos1 + i);
+                    pos = new Vector3(j, Height, startPos1 + i);
                     if (!_blocks.ContainsKey(pos))
                         _blocks[pos] = Instantiate(_prefab, pos, Quaternion.identity);
-                    pos = new Vector3(j, 0, startPos2 + i);
+                    pos = new Vector3(j, Height, startPos2 + i);
                     if (!_blocks.ContainsKey(pos))
                         _blocks[pos] = Instantiate(_prefab, pos, Quaternion.identity);
                 }
