@@ -21,16 +21,27 @@ namespace Player {
         
         public static void Update(GameObject target) {
             var delta = Input.mousePositionDelta;
+
+            var tempX = _xAxis;
+            var tempY = _yAxis;
+            
             _yAxis += delta.x * YSensitive;
             _xAxis -= delta.y * XSensitive;
             _xAxis = ExSingle.Clamp(MinXAxis, _xAxis, MaxXAxis);
 
             _camera ??= Camera.main!;
             var rotation = CurRotation;
+            var pos = target.transform.position + rotation * Vector3.back * Distance;
+            
+            if (Physics.Raycast(pos, Vector3.zero, 0f)) {
+                _xAxis = tempX;
+                _yAxis = tempY;
+                rotation = CurRotation;
+                pos = target.transform.position + rotation * Vector3.back * Distance;   
+            }
             
             _camera.transform.rotation = rotation;
-            _camera.transform.position = target.transform.position 
-                                         + rotation * Vector3.back * Distance;
+            _camera.transform.position = pos;
         }
     }
 }
