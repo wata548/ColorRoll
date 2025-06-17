@@ -6,8 +6,13 @@ using PlayerStateBase = Player.StateBase<Player.PlayerState, Player.PlayerFSM>;
 
 namespace Player {
     public class PlayerFSM: MonoBehaviour {
+        //==================================================||Field
 
-       //==================================================||Constant 
+        [field: SerializeField] public ParticleSystem Charge1 { get; private set; }
+        [field: SerializeField] public ParticleSystem Charge2 { get; private set; }
+        [field: SerializeField] public ParticleSystem Charge3 { get; private set; }
+        
+        //==================================================||Constant 
         private static readonly ReadOnlyDictionary<PlayerState, PlayerStateBase> StateMath = new(
             new Dictionary<PlayerState, PlayerStateBase>() {
                 { PlayerState.Working,  new WorkingStateBase(PlayerState.Working)},
@@ -16,20 +21,35 @@ namespace Player {
         );
         
         //==================================================||Properties            
-        public static implicit operator FSM<PlayerState, PlayerFSM>(PlayerFSM fsm) =>
+        public static implicit operator FiniteStateMachine<PlayerState, PlayerFSM>(PlayerFSM fsm) =>
             fsm.Fsm;
-        public FSM<PlayerState, PlayerFSM> Fsm { get; private set; }
-        public InputData Data { get; private set; }
+
+        public FiniteStateMachine<PlayerState, PlayerFSM> Fsm { get; private set; } = new();
+        public InputData Data { get; private set; } = null;
         public Rigidbody Rigid { get; private set; }
 
+        public PlayerState CurrentState => Fsm.CurrentState;
         //==================================================||Methods 
-        
-        public void SetInputData(InputData data) =>
+
+        private void UpdateFsm() {
+
+            if (Data == null)
+                return;
+            
+            Fsm.Update(this);
+            Data = null;
+        }
+
+        public void SetInputData(InputData data) {
+            
             Data = data;
+            UpdateFsm();
+        }
         
         public void Change(PlayerState state) =>
             Fsm.Change(StateMath[state], state, this);
 
+        //==================================================||Unity 
         private void Awake() {
             Rigid = GetComponent<Rigidbody>();
         }

@@ -15,7 +15,6 @@ namespace Test {
         [SerializeField] private TMP_Text _stateShower;
         
         private Rigidbody _rigidbody;
-        private PlayerState _state;
         private InputControl _input;
         private PlayerFSM _fsm;
 
@@ -23,16 +22,16 @@ namespace Test {
             
             _rigidbody = GetComponent<Rigidbody>();
             _fsm = GetComponent<PlayerFSM>();
+            _fsm.Change(PlayerState.Working);
             _input = new("DefaultInput.csv");
-            _state = PlayerState.Working;
         }
 
         private void Update() {
             
             CameraFocus.Update(gameObject);
             var inputData = new InputData(CameraFocus.CurRotation, _input);
-            
-            _stateShower.text = _state.ToString();
+            _fsm.SetInputData(inputData);
+            _stateShower.text = _fsm.CurrentState.ToString();
         }
     }
 }
