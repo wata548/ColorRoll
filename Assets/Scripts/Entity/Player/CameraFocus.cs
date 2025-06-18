@@ -25,7 +25,7 @@ namespace Player {
             Quaternion.Euler(_xAxis, _yAxis, 0);
 
        //==================================================||Methods 
-        private static Vector3 SpringCamera(Vector3 origin, Vector3 direction) {
+        private static Vector3 SpringCamera(Vector3 origin, Vector3 direction, int layer) {
 
             var result = direction;
             if (Physics.Raycast(origin, direction, out RaycastHit hit)) {
@@ -41,6 +41,7 @@ namespace Player {
        //==================================================||Unity
        
         public static void Update(GameObject target) {
+            
             var delta = Input.mousePositionDelta;
 
             _yAxis += delta.x * YSensitive;
@@ -50,7 +51,7 @@ namespace Player {
             _camera ??= Camera.main!;
             var rotation = CurRotation;
             var direction = rotation * Vector3.back * Distance;
-            var pos = SpringCamera(target.transform.position, direction);
+            var pos = SpringCamera(target.transform.position, direction, target.layer);
             
             _camera.transform.rotation = rotation;
             _camera.transform.position = pos;

@@ -1,11 +1,11 @@
 ﻿using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using InputSystem;
-using Networking;
 using UnityEngine;
+using FSMBase;
 
 namespace Player {
-    public class WorkingStateBase: StateBase<PlayerState, PlayerFSM> {
+    public class WorkingState: StateBase<PlayerState, PlayerFSM> {
 
        //==================================================||Constant 
         private static readonly ReadOnlyDictionary<Actions, Vector3Int> DirectionKey = new(
@@ -18,7 +18,7 @@ namespace Player {
         );
 
        //==================================================||Constructors 
-        public WorkingStateBase(PlayerState key) : base(key) {}
+        public WorkingState(PlayerState key) : base(key) {}
         
        //==================================================||Methods 
         public override void Enter(PlayerState previousState, PlayerFSM machine) {}
@@ -28,6 +28,10 @@ namespace Player {
             if ((machine.Data.GetKey & Actions.Charge) != Actions.None) {
                 machine.Change(PlayerState.Charging);
                 return;
+            }
+
+            if ((machine.Data.GetKey & Actions.UseItem) == Actions.UseItem) {
+                machine.Change(PlayerState.Broken);
             }
                 
             var result = Vector3.zero;

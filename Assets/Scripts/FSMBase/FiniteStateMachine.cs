@@ -1,4 +1,4 @@
-﻿namespace Player {
+﻿namespace FSMBase {
     public class FiniteStateMachine<TState, TMachine> {
 
         //==================================================||Fields 

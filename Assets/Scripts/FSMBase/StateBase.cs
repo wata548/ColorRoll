@@ -1,4 +1,4 @@
-﻿namespace Player {
+﻿namespace FSMBase {
     public abstract class StateBase<TState, TMachine> {
 
        //==================================================||Properties 

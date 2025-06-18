@@ -3,5 +3,6 @@
         Working,
         Charging,
         Broken,
+        Shooting,
     };
 }
