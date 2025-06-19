@@ -6,15 +6,15 @@ namespace Entitty {
     
     [RequireComponent(typeof(RayfireRigid))]
     public class Damageable: MonoBehaviour {
-        public float MaxHp { get; private set; }
-        public float CurHp { get; private set; }
+        public float MaxHp { get; private set; } = 0;
+        public float CurHp { get; private set; } = 0;
         public bool IsDeath { get; private set; } = false;
         
         
         public void SetHp(float target) =>
             (MaxHp, CurHp) = (target, target);
 
-        public void Damage(float damage) {
+        public void GiveDamage(float damage) {
 
             if (damage < 0)
                 throw new Exception("damage is positive value");

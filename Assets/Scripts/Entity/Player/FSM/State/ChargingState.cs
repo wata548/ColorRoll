@@ -8,7 +8,6 @@ namespace Player {
         
         //==================================================||Constant
         private static readonly float[] LevelTime = new float[]{0, 1f, 2.8f};
-        private static readonly float[] ChargeDamage = new float[]{1, 5f, 12f};
 
         //==================================================||Fields
         private float _startTime = 0;

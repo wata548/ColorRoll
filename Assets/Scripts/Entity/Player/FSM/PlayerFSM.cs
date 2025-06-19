@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using Entitty;
 using UnityEngine;
 using Networking;
 using FSMBase;
@@ -24,13 +25,13 @@ namespace Player {
         public FiniteStateMachine<PlayerState, PlayerFSM> Fsm { get; private set; } = new();
         public InputData Data { get; private set; } = null;
         public Rigidbody Rigid { get; private set; }
-        public List<GameObject> Collision { get; private set; } = new();
+        public List<Damageable> Collision { get; private set; } = new();
 
         public PlayerState CurrentState => Fsm.CurrentState;
         
         //==================================================||Field
         private int _lastUpdateFrame = -1;
-        private List<GameObject> _currentCollision = new();
+        private List<Damageable> _currentCollision = new();
         
         //==================================================||Constant 
         public readonly ReadOnlyDictionary<PlayerState, PlayerStateBase> StateMatch = new(
@@ -84,12 +85,12 @@ namespace Player {
 
         private void OnCollisionEnter(Collision other) {
 
-            if (other.gameObject.CompareTag("Floor"))
+            if (!other.gameObject.TryGetComponent(typeof(Damageable), out var damageable)) 
                 return;
 
             CollisionListUpdate();
 
-            _currentCollision.Add(other.gameObject);
+            _currentCollision.Add(damageable as Damageable);
         }
     }
 }
