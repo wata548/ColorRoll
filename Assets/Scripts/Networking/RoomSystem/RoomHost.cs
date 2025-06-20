@@ -3,12 +3,13 @@ using System.Net.Sockets;
 using System.Text;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
+using UnityEngine;
 
 namespace Networking.RoomSystem {
     
     public class RoomHost: RoomBase {
 
-        public const int Port = 54321;
+        public const int Port = 51234;
         private readonly string _roomName;
         private UdpClient _receiverClient;
         
@@ -27,6 +28,8 @@ namespace Networking.RoomSystem {
                 var rawData = _receiverClient.Receive(ref remoteEndPoint);
                 var receiveJson = Encoding.UTF8.GetString(rawData);
                 var receiveData = JsonConvert.DeserializeObject<RoomInfo>(receiveJson);
+                Debug.Log("Receive");
+                
                 if(receiveData.Command != RoomFindCommand.Find)
                     continue;
 

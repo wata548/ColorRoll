@@ -47,6 +47,7 @@ namespace Networking.RoomSystem {
             var sendJson = JsonConvert.SerializeObject(data);
             var rawData = Encoding.UTF8.GetBytes(sendJson);
             sendClient.Send(rawData, rawData.Length, sendEndPoint);
+            Debug.Log($"send: {sendJson}");
             sendClient.Close();
         }
         
