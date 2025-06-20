@@ -13,29 +13,52 @@ namespace Networking.RoomSystem {
         
         //==================================================||Constant 
         public const int Port = 51234;
-        public const float WaitReceiveTime = 3f;
-        private const int DefaultWaitTime = 500;
+        public const float WaitReceiveTime = 1.5f;
+        private const int TimeOutCheckInterval = 500;
         
         //==================================================||Fields 
-        private Dictionary<string, (string, int)> _maps = new();
-        private UdpClient _receiveClient;
+        private readonly Dictionary<string, (string ip, int port)> _maps;
+        //it opened on constructor, closed when get AllowRequset
+        private readonly UdpClient _receiveClient;
 
-       //==================================================||Properties
-       public List<(string, string)> FindedRoom => _maps
-           .Select(room => (room.Key, room.Value.Item1))
-           .ToList();
+        //==================================================||Properties
+        public List<(string, string)> FindRoom => _maps
+            .Select(room => (room.Key, room.Value.ip))
+            .ToList();
+
+        public override string OtherPlayerIp { get; protected set; } = "";
         
-       //==================================================||Constructors 
+        //==================================================||Constructors 
         public RoomClient() {
+            _maps = new();
             _receiveClient = new(Port);
         }
 
-       //==================================================||Methods 
+        //==================================================||Methods 
+        
         public void Refresh() {
             Send();
             Task.Run(Receive);
         }
         
+        public void SelectOtherPlayer(string roomName) {
+        
+            if (!_maps.TryGetValue(roomName, out var host))
+                return;
+                    
+            var sendClient = new UdpClient();
+            var target = new IPEndPoint(IPAddress.Parse(host.ip), host.port);
+        
+            var data = new RoomInfo(RoomFindCommand.JoinRequest, GetIP(), Port);
+            var rawData = ToByte(data);
+            sendClient.Send(rawData, rawData.Length, target);
+                    
+            sendClient.Close();
+                    
+            //Wait till get Allow from host
+            Task.Run(Receive);
+        }
+
         private void Send() {
             
             _maps.Clear();
@@ -43,11 +66,9 @@ namespace Networking.RoomSystem {
             sendClient.EnableBroadcast = true;
             var sendEndPoint = new IPEndPoint(IPAddress.Broadcast, RoomHost.Port);
             
-            var data = new RoomInfo(RoomFindCommand.Find, GetIP(), Port, "");
-            var sendJson = JsonConvert.SerializeObject(data);
-            var rawData = Encoding.UTF8.GetBytes(sendJson);
+            var data = new RoomInfo(RoomFindCommand.RoomRequest, GetIP(), Port);
+            var rawData = ToByte(data);
             sendClient.Send(rawData, rawData.Length, sendEndPoint);
-            Debug.Log($"send: {sendJson}");
             sendClient.Close();
         }
         
@@ -56,26 +77,31 @@ namespace Networking.RoomSystem {
             var sendTime = DateTime.Now;
 
             while ((DateTime.Now - sendTime).TotalSeconds <= WaitReceiveTime) {
-                try {
-                    var receiveTask = _receiveClient.ReceiveAsync();
-                    var timeoutTask = Task.Delay(DefaultWaitTime);
 
-                    var result = await Task.WhenAny(receiveTask, timeoutTask);
-                    if (result != receiveTask)
-                        continue;
+                if (!string.IsNullOrWhiteSpace(OtherPlayerIp))
+                    break;
+                
+                var receiveTask = _receiveClient.ReceiveAsync();
+                var timeoutTask = Task.Delay(TimeOutCheckInterval);
 
-                    var receiveRawData = receiveTask.Result.Buffer;
-                    var receiveJson = Encoding.UTF8.GetString(receiveRawData);
-                    var receiveData = JsonConvert.DeserializeObject<RoomInfo>(receiveJson);
-                    if (receiveData.Command == RoomFindCommand.RoomInfo) {
+                //check timeout
+                var result = await Task.WhenAny(receiveTask, timeoutTask);
+                if (result != receiveTask)
+                    continue;
+
+                var receiveRawData = receiveTask.Result.Buffer;
+                var receiveData = ToData(receiveRawData);
+
+                switch (receiveData.Command) {
+                    case RoomFindCommand.RoomInfo:
                         _maps.TryAdd(receiveData.Name, (receiveData.Ip, receiveData.Port));
-                    }
-                }
-                catch(SocketException e) {
-                    Debug.LogError($"Network Exception: {e.Message}");
+                        break;
+                    case RoomFindCommand.Allow:
+                        OtherPlayerIp = receiveData.Ip;
+                        _receiveClient.Close();
+                        break;           
                 }
             }
         }
     }
-
 }
