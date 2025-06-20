@@ -5,6 +5,7 @@ namespace UI.Main {
     public class Main: MonoBehaviour {
 
         [SerializeField] private MakeRoomModal _modal;
+        public const string ButtonGroup = "MainButtons";
         
         public void Quit() {
             Application.Quit();
@@ -16,11 +17,11 @@ namespace UI.Main {
 
         public void Make() {
             _modal.SetActive(true);
-            InteractableUIBase.SetGroup("MainButtons", false);
+            InteractableUIBase.SetGroup(ButtonGroup, false);
         }
 
         public void CloseMakeRoomModal() {
-            InteractableUIBase.SetGroup("MainButtons", true);
+            InteractableUIBase.SetGroup(ButtonGroup, true);
             _modal.SetActive(false);
             _modal.Init();
         }

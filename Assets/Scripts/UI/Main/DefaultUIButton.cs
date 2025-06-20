@@ -26,6 +26,7 @@ namespace UI.Main {
 
         private new void Awake() {
             base.Awake();
+            
             _defaultColor = _context.color;
             _defaultScale = _object.transform.localScale;
         }
