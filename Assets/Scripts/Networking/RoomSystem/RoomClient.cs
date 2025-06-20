@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
@@ -12,17 +13,21 @@ namespace Networking.RoomSystem {
         
         //==================================================||Constant 
         public const int Port = 51234;
-        private const int WaitReceiveTime = 3;
+        public const float WaitReceiveTime = 3f;
         private const int DefaultWaitTime = 500;
         
         //==================================================||Fields 
         private Dictionary<string, (string, int)> _maps = new();
         private UdpClient _receiveClient;
 
+       //==================================================||Properties
+       public List<(string, string)> FindedRoom => _maps
+           .Select(room => (room.Key, room.Value.Item1))
+           .ToList();
+        
        //==================================================||Constructors 
         public RoomClient() {
             _receiveClient = new(Port);
-            Refresh();
         }
 
        //==================================================||Methods 
@@ -44,6 +49,7 @@ namespace Networking.RoomSystem {
             sendClient.Send(rawData, rawData.Length, sendEndPoint);
             sendClient.Close();
         }
+        
         private async Task Receive() {
 
             var sendTime = DateTime.Now;

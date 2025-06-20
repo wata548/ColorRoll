@@ -12,10 +12,11 @@ namespace Networking.RoomSystem {
         private readonly string _roomName;
         private UdpClient _receiverClient;
         
-        public RoomHost() {
-            
-            Task.Run(SendRoomInfo);
+        public RoomHost(string roomName) {
+
+            _roomName = roomName;
             _receiverClient = new(Port);
+            Task.Run(SendRoomInfo);
         }
         
         private Task SendRoomInfo() {

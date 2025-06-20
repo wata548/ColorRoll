@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using Networking.RoomSystem;
+using UnityEngine;
 using UnityEngine.SceneManagement;
 
 namespace UI.Main {
@@ -12,12 +13,20 @@ namespace UI.Main {
         }
 
         public void Join() {
+            
+            NetworkManager.Instance.EnterClientScene();
             SceneManager.LoadScene("JoinRoom");
         }
 
-        public void Make() {
+        public void ShowMakeRoomModal() {
             _modal.SetActive(true);
             InteractableUIBase.SetGroup(ButtonGroup, false);
+        }
+
+        public void MakeRoom() {
+            
+            NetworkManager.Instance.EnterHostScene(_modal.Context);
+            SceneManager.LoadScene("MakeRoom");
         }
 
         public void CloseMakeRoomModal() {
