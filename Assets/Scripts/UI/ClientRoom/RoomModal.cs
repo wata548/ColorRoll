@@ -30,7 +30,7 @@ namespace UI.ClientRoom {
         }
                 
         
-        public void QuitRoom() {
+        public void CloseModal() {
             
             _target = (NetworkManager.Instance.Room as RoomClient)!;
             _target.Quit();
@@ -56,11 +56,22 @@ namespace UI.ClientRoom {
 
         private void Update() {
 
-            if (_isActive)
+            if (_isActive) {
+                if (!RoomClient.IsInRoom) {
+                    _modal.SetActive(false);
+            
+                    _generator.enabled = true;
+                    _generator.Refresh();
+            
+                    _isActive = false;
+                }    
                 return;
+            }
             
             if(!string.IsNullOrWhiteSpace(RoomClient.OtherPlayerIp))
                 OpenModal();
+            
+            
         }
     }
 }
