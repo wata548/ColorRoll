@@ -20,10 +20,15 @@ namespace Networking.RoomSystem {
         private void OnApplicationQuit() {
             if (Room == null)
                 return;
-            if(Room is RoomHost host) 
+            if (Room is RoomHost host) {
+                
                 host.Quit();
-            else if(Room is RoomClient client) 
+            }
+            else if (Room is RoomClient client) {
+                
+                client.Quit();
                 client.Close();
+            }
         }
 
         //==================================================||Methods 

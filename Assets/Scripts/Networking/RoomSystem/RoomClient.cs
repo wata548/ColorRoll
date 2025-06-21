@@ -48,12 +48,14 @@ namespace Networking.RoomSystem {
             IsOpen = false;
         }
 
+        public void Ready() {
+            Send(OtherPlayerIp, RoomHost.Port, RoomCommand.Start);
+        }
         public void Quit() {
             
             Send(OtherPlayerIp, RoomHost.Port, RoomCommand.Quit);
             Quited();
         }
-        
         private void Quited() {
             IsInRoom = false;
             OtherPlayerIp = "";
@@ -129,7 +131,8 @@ namespace Networking.RoomSystem {
                     case RoomCommand.Start:
                         if (!IsInRoom)
                             break;
-                        //TODO: Game Start
+                        Close();
+                        SceneManager.LoadScene("Game");
                         break;
                 }
             }

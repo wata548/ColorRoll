@@ -5,6 +5,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 namespace Networking.RoomSystem {
     
@@ -21,13 +22,16 @@ namespace Networking.RoomSystem {
         public static bool IsOpen { get; private set; } = false;
         
         //==================================================||Properties 
-        public static string OtherPlayerIp { get; protected set; } = "";
+        public static string OtherPlayerIp { get; private set; } = "";
+        public static bool OtherPlayerReady { get; private set; } = false;
         
         //==================================================||Constructors 
         public RoomHost(string roomName) {
 
             IsOpen = true;
-            Debug.Log("T");
+            OtherPlayerReady = false;
+            OtherPlayerIp = "";
+            
             RoomName = roomName;
             if (_receiveClient == null) {
                 
@@ -37,10 +41,20 @@ namespace Networking.RoomSystem {
         }
         
         //==================================================||Methods 
+
+        public void Start() {
+            
+            if(!OtherPlayerReady)
+                return;
+
+            IsOpen = false;
+            Send(OtherPlayerIp, RoomClient.Port, RoomCommand.Start);
+            SceneManager.LoadScene("Game");
+        }
+        
         public void Quit() {
 
             IsOpen = false;
-            Debug.Log("F");
             if (!string.IsNullOrWhiteSpace(OtherPlayerIp)) {
                 
                 Send(OtherPlayerIp, RoomClient.Port, RoomCommand.Quit);
@@ -71,7 +85,11 @@ namespace Networking.RoomSystem {
                         SelectOtherPlayer(receiveData);
                         break;
                     case RoomCommand.Quit:
+                        OtherPlayerReady = false;
                         OtherPlayerIp = "";
+                        break;
+                    case RoomCommand.Start:
+                        OtherPlayerReady = !OtherPlayerReady;
                         break;
                     default:
                         continue;
