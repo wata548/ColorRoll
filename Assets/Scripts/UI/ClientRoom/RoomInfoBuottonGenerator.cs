@@ -16,20 +16,24 @@ namespace UI.ClientRoom {
         private List<RoomInfoButton> _rooms = new();
         private int _count = 0;
 
+        
+       //==================================================||Methods 
         private void UpdateRoomInfo(List<(string roomName, string ip)> datas) {
             foreach (var room in _rooms) {
-                Destroy(room);
+                Destroy(room.gameObject);
             }
+            _rooms.Clear();
 
             int idx = 0;
             foreach (var data in datas) {
                 var target = Instantiate(_prefab.gameObject, _canvas.transform);
-
+                
                 var pos = DefaultPos;
                 pos.y -= YInterval * idx;
                 target.transform.position = pos;
-                target.GetComponent<RoomInfoButton>().Set(data.roomName, data.ip);
-
+                var targetCommponent = target.GetComponent<RoomInfoButton>();
+                targetCommponent.Set(data.roomName, data.ip);
+                _rooms.Add(targetCommponent);
                 idx++;
 
             }
@@ -38,7 +42,7 @@ namespace UI.ClientRoom {
 
         public void Refresh() {
             
-            var target = (NetworkManager.Instance.RoomBase as RoomClient)!;
+            var target = (NetworkManager.Instance.Room as RoomClient)!;
             target.Refresh();
 
             StartCoroutine(
@@ -50,6 +54,15 @@ namespace UI.ClientRoom {
             
         }
 
+        public void TurnOff() {
+            foreach (var room in _rooms) {
+                Destroy(room.gameObject);
+            }
+            _rooms.Clear();
+            enabled = false;
+        }
+        
+       //==================================================||Unity 
         private new void Awake() {
             base.Awake();
             Refresh();

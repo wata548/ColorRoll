@@ -14,10 +14,11 @@ namespace Networking.RoomSystem {
         public const int Port = 54321;
         
         //==================================================||Fields 
-        private readonly string _roomName;
-        
-        //it opened on constructor, closed when get JoinRequest
-        private readonly UdpClient _receiverClient;
+        public readonly string RoomName;
+       
+        private static UdpClient _receiveClient = null;
+
+        public static bool IsOpen { get; private set; } = false;
         
         //==================================================||Properties 
         public override string OtherPlayerIp { get; protected set; } = "";
@@ -25,53 +26,77 @@ namespace Networking.RoomSystem {
         //==================================================||Constructors 
         public RoomHost(string roomName) {
 
-            _roomName = roomName;
-            _receiverClient = new(Port);
-            Task.Run(Udp);
+            IsOpen = true;
+            Debug.Log("T");
+            RoomName = roomName;
+            if (_receiveClient == null) {
+                
+                _receiveClient = new(Port);
+                Task.Run(Udp);
+            }
         }
         
         //==================================================||Methods 
+        public void Quit() {
 
+            IsOpen = false;
+            Debug.Log("F");
+            if (!string.IsNullOrWhiteSpace(OtherPlayerIp)) {
+                
+                Send(OtherPlayerIp, RoomClient.Port, RoomCommand.Quit);
+                OtherPlayerIp = "";
+            }
+        }
 
         private Task Udp() {
             var remoteEndPoint = new IPEndPoint(IPAddress.Any, Port);
 
             while (true) {
 
-                if (!string.IsNullOrWhiteSpace(OtherPlayerIp))
-                    break;
-                
                 //receive
                 Debug.Log("Wait for receive");
-                var rawData = _receiverClient.Receive(ref remoteEndPoint);
+                var rawData = _receiveClient.Receive(ref remoteEndPoint);
                 var receiveData = ToData(rawData);
-                Debug.Log("Receive");
+                Debug.Log($"Receive {receiveData.Command} ({IsOpen})");
+                
+                if(!IsOpen)
+                    continue;
                 
                 //after receive
                 switch (receiveData.Command) {
-                    case RoomFindCommand.RoomRequest:
-                        Send(receiveData.Ip, receiveData.Port, RoomFindCommand.RoomInfo);
+                    case RoomCommand.RoomRequest:
+                        Send(receiveData.Ip, receiveData.Port, RoomCommand.RoomInfo);
                         break;
-                    case RoomFindCommand.JoinRequest:
-                        OtherPlayerIp = receiveData.Ip;
-                        Send(receiveData.Ip, receiveData.Port, RoomFindCommand.Allow);
-                        _receiverClient.Close();
+                    case RoomCommand.JoinRequest:
+                        SelectOtherPlayer(receiveData);
+                        break;
+                    case RoomCommand.Quit:
+                        OtherPlayerIp = "";
                         break;
                     default:
                         continue;
                 }        
             }
-            _receiverClient.Close();
             
             return null;
         }
 
-        private void Send(string ip, int port, RoomFindCommand command) {
+        private void SelectOtherPlayer(RoomInfo data) {
+
+            if (!string.IsNullOrWhiteSpace(OtherPlayerIp))
+                return;
             
+            OtherPlayerIp = data.Ip;
+            Send(data.Ip, data.Port, RoomCommand.Allow);
+        }
+        
+        private void Send(string ip, int port, RoomCommand command) {
+            
+            Debug.Log($"Send {command} to {ip}");
             var sendClient = new UdpClient();
             var target = new IPEndPoint(IPAddress.Parse(ip), port);
                         
-            var data = new RoomInfo(command, GetIP() , Port, _roomName);
+            var data = new RoomInfo(command, GetIP() , Port, RoomName);
             var sendData = ToByte(data);
                         
             sendClient.Send(sendData, sendData.Length, target);

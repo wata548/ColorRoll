@@ -1,4 +1,5 @@
-﻿using Extensions;
+﻿using System;
+using Extensions;
 using UnityEngine;
 using UnityEngine.Serialization;
 
@@ -7,7 +8,7 @@ namespace Networking.RoomSystem {
 
        //==================================================||Properties 
         public bool IsHost { get; private set; } = true;
-        public RoomBase RoomBase { get; private set; }
+        public RoomBase Room { get; private set; }
 
        //==================================================||Unity 
         private new void Awake() {
@@ -16,19 +17,30 @@ namespace Networking.RoomSystem {
             DontDestroyOnLoad(gameObject);
         }
 
-       //==================================================||Methods 
+        private void OnApplicationQuit() {
+            if (Room == null)
+                return;
+            if(Room is RoomHost host) 
+                host.Quit();
+            else if(Room is RoomClient client) 
+                client.Close();
+        }
+
+        //==================================================||Methods 
         public void EnterHostScene(string roomName) {
+            
             IsHost = true;
-            RoomBase = new RoomHost(roomName);
+            Room = new RoomHost(roomName);
         }
 
         public void EnterClientScene() {
+            
             IsHost = false;
-            RoomBase = new RoomClient();
+            Room = new RoomClient();
         }
 
         public void ExitRoom() {
-            RoomBase = null;
+            Room = null;
         } 
     }
 }

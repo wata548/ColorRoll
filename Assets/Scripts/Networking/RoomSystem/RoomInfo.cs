@@ -1,19 +1,21 @@
 ﻿namespace Networking.RoomSystem {
     
-    public enum RoomFindCommand {
+    public enum RoomCommand {
         RoomRequest, 
         RoomInfo,
         JoinRequest,
-        Allow
+        Allow,
+        Quit,
+        Start
     }
     
     public class RoomInfo {
-        public RoomFindCommand Command;
+        public RoomCommand Command;
         public string Ip;
         public int Port;
         public string Name;
 
-        public RoomInfo(RoomFindCommand command, string ip, int port, string name = "") {
+        public RoomInfo(RoomCommand command, string ip, int port, string name = "") {
             Command = command;
             Ip = ip;
             Port = port;

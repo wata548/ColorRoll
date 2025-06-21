@@ -3,10 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Net.Sockets;
-using System.Text;
 using System.Threading.Tasks;
-using Newtonsoft.Json;
-using UnityEngine;
+using UnityEngine.SceneManagement;
 
 namespace Networking.RoomSystem {
     public class RoomClient: RoomBase {
@@ -18,55 +16,80 @@ namespace Networking.RoomSystem {
         
         //==================================================||Fields 
         private readonly Dictionary<string, (string ip, int port)> _maps;
-        //it opened on constructor, closed when get AllowRequset
-        private readonly UdpClient _receiveClient;
-
+        private static UdpClient _receiveClient;
+        public static bool IsInRoom { get; private set; } = false;
+        public static bool IsOpen { get; private set; } = false;
+        
         //==================================================||Properties
         public List<(string, string)> FindRoom => _maps
             .Select(room => (room.Key, room.Value.ip))
             .ToList();
 
         public override string OtherPlayerIp { get; protected set; } = "";
+        public static string RoomName { get; private set; } = "";
         
         //==================================================||Constructors 
         public RoomClient() {
+            IsOpen = true;
+            IsInRoom = false;
             _maps = new();
-            _receiveClient = new(Port);
+            if (_receiveClient == null) {
+                
+                _receiveClient = new(Port);
+                Task.Run(Receive);
+            }
         }
 
         //==================================================||Methods 
-        
-        public void Refresh() {
-            Send();
-            Task.Run(Receive);
-        }
-        
-        public void SelectOtherPlayer(string roomName) {
-        
-            if (!_maps.TryGetValue(roomName, out var host))
-                return;
-                    
-            var sendClient = new UdpClient();
-            var target = new IPEndPoint(IPAddress.Parse(host.ip), host.port);
-        
-            var data = new RoomInfo(RoomFindCommand.JoinRequest, GetIP(), Port);
-            var rawData = ToByte(data);
-            sendClient.Send(rawData, rawData.Length, target);
-                    
-            sendClient.Close();
-                    
-            //Wait till get Allow from host
-            Task.Run(Receive);
+
+        public void Close() {
+            IsOpen = false;
         }
 
-        private void Send() {
+        public void Quit() {
+            
+            Send(OtherPlayerIp, RoomHost.Port, RoomCommand.Quit);
+            Quited();
+        }
+        
+        private void Quited() {
+            IsInRoom = false;
+            OtherPlayerIp = "";
+        }
+        
+        public void Refresh() {
+            SendFindRoomRequest();
+        }
+        
+        public void RoomJoinRequest(string roomName) {
+
+            if (!_maps.TryGetValue(roomName, out var host))
+                return;
+            
+            Send(host.ip, host.port, RoomCommand.JoinRequest);
+            RoomName = roomName;
+        }
+
+        private void Send(string ip, int port, RoomCommand command) {
+            
+            var sendClient = new UdpClient();
+            var target = new IPEndPoint(IPAddress.Parse(ip), port);
+                    
+            var data = new RoomInfo(command, GetIP(), Port);
+            var rawData = ToByte(data);
+            sendClient.Send(rawData, rawData.Length, target);
+                                
+            sendClient.Close();
+        }
+
+        private void SendFindRoomRequest() {
             
             _maps.Clear();
             var sendClient = new UdpClient();
             sendClient.EnableBroadcast = true;
             var sendEndPoint = new IPEndPoint(IPAddress.Broadcast, RoomHost.Port);
             
-            var data = new RoomInfo(RoomFindCommand.RoomRequest, GetIP(), Port);
+            var data = new RoomInfo(RoomCommand.RoomRequest, GetIP(), Port);
             var rawData = ToByte(data);
             sendClient.Send(rawData, rawData.Length, sendEndPoint);
             sendClient.Close();
@@ -74,32 +97,35 @@ namespace Networking.RoomSystem {
         
         private async Task Receive() {
 
-            var sendTime = DateTime.Now;
+            var target = new IPEndPoint(IPAddress.Any, Port);
+            
+            while (true) {
 
-            while ((DateTime.Now - sendTime).TotalSeconds <= WaitReceiveTime) {
-
-                if (!string.IsNullOrWhiteSpace(OtherPlayerIp))
-                    break;
-                
-                var receiveTask = _receiveClient.ReceiveAsync();
-                var timeoutTask = Task.Delay(TimeOutCheckInterval);
-
-                //check timeout
-                var result = await Task.WhenAny(receiveTask, timeoutTask);
-                if (result != receiveTask)
-                    continue;
-
-                var receiveRawData = receiveTask.Result.Buffer;
+                var receiveRawData = _receiveClient.Receive(ref target);
                 var receiveData = ToData(receiveRawData);
 
+                if (!IsOpen)
+                    continue;
+                
                 switch (receiveData.Command) {
-                    case RoomFindCommand.RoomInfo:
+                    case RoomCommand.RoomInfo:
                         _maps.TryAdd(receiveData.Name, (receiveData.Ip, receiveData.Port));
                         break;
-                    case RoomFindCommand.Allow:
-                        OtherPlayerIp = receiveData.Ip;
-                        _receiveClient.Close();
+                    case RoomCommand.Allow:
+                        if (string.IsNullOrWhiteSpace(OtherPlayerIp)) {
+
+                            IsInRoom = true;
+                            OtherPlayerIp = receiveData.Ip;
+                        }
                         break;           
+                    case RoomCommand.Quit:
+                        Quited();
+                        break;
+                    case RoomCommand.Start:
+                        if (!IsInRoom)
+                            break;
+                        //TODO: Game Start
+                        break;
                 }
             }
         }

@@ -1,4 +1,5 @@
-﻿using TMPro;
+﻿using Networking.RoomSystem;
+using TMPro;
 using UnityEngine;
 
 namespace UI.ClientRoom {
@@ -10,6 +11,11 @@ namespace UI.ClientRoom {
         public void Set(string name, string ip) {
             _roomName.text = name;
             _ip.text = ip;
+        }
+
+        public void Click() {
+            var target = (NetworkManager.Instance.Room as RoomClient)!;
+            target.RoomJoinRequest(_roomName.text);
         }
     }
 }
