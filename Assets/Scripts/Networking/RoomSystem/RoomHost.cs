@@ -14,14 +14,14 @@ namespace Networking.RoomSystem {
         public const int Port = 54321;
         
         //==================================================||Fields 
-        public readonly string RoomName;
+        public static string RoomName;
        
         private static UdpClient _receiveClient = null;
 
         public static bool IsOpen { get; private set; } = false;
         
         //==================================================||Properties 
-        public override string OtherPlayerIp { get; protected set; } = "";
+        public static string OtherPlayerIp { get; protected set; } = "";
         
         //==================================================||Constructors 
         public RoomHost(string roomName) {

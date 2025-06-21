@@ -47,10 +47,9 @@ namespace UI.ClientRoom {
             
             _generator.TurnOff();
 
-            _target = (NetworkManager.Instance.Room as RoomClient)!;
             _myIp.text = RoomBase.GetIP();
-            _roomName.text = string.Format(RoomNameFormat, _target.RoomName);
-            _otherIp.text = _target.OtherPlayerIp;
+            _roomName.text = string.Format(RoomNameFormat,  RoomClient.RoomName);
+            _otherIp.text = RoomClient.OtherPlayerIp;
             
             _isActive = true;
         }
@@ -60,9 +59,7 @@ namespace UI.ClientRoom {
             if (_isActive)
                 return;
             
-            _target = (NetworkManager.Instance.Room as RoomClient)!;
-            
-            if(!string.IsNullOrWhiteSpace(_target.OtherPlayerIp))
+            if(!string.IsNullOrWhiteSpace(RoomClient.OtherPlayerIp))
                 OpenModal();
         }
     }

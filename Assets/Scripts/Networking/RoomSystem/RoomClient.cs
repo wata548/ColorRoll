@@ -4,6 +4,7 @@ using System.Linq;
 using System.Net;
 using System.Net.Sockets;
 using System.Threading.Tasks;
+using UnityEngine;
 using UnityEngine.SceneManagement;
 
 namespace Networking.RoomSystem {
@@ -15,7 +16,7 @@ namespace Networking.RoomSystem {
         private const int TimeOutCheckInterval = 500;
         
         //==================================================||Fields 
-        private readonly Dictionary<string, (string ip, int port)> _maps;
+        private static Dictionary<string, (string ip, int port)> _maps;
         private static UdpClient _receiveClient;
         public static bool IsInRoom { get; private set; } = false;
         public static bool IsOpen { get; private set; } = false;
@@ -25,14 +26,15 @@ namespace Networking.RoomSystem {
             .Select(room => (room.Key, room.Value.ip))
             .ToList();
 
-        public override string OtherPlayerIp { get; protected set; } = "";
+        public static string OtherPlayerIp { get; protected set; } = "";
         public static string RoomName { get; private set; } = "";
         
         //==================================================||Constructors 
         public RoomClient() {
             IsOpen = true;
             IsInRoom = false;
-            _maps = new();
+            if(_maps == null)
+                _maps = new();
             if (_receiveClient == null) {
                 
                 _receiveClient = new(Port);
@@ -72,6 +74,8 @@ namespace Networking.RoomSystem {
 
         private void Send(string ip, int port, RoomCommand command) {
             
+            Debug.Log($"Send {command} to {ip} {IsOpen}");
+            
             var sendClient = new UdpClient();
             var target = new IPEndPoint(IPAddress.Parse(ip), port);
                     
@@ -89,6 +93,7 @@ namespace Networking.RoomSystem {
             sendClient.EnableBroadcast = true;
             var sendEndPoint = new IPEndPoint(IPAddress.Broadcast, RoomHost.Port);
             
+            Debug.Log("Find");
             var data = new RoomInfo(RoomCommand.RoomRequest, GetIP(), Port);
             var rawData = ToByte(data);
             sendClient.Send(rawData, rawData.Length, sendEndPoint);
