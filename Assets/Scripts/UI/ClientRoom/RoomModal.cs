@@ -56,6 +56,7 @@ namespace UI.ClientRoom {
 
         private void Update() {
 
+            RoomClient.Start();
             if (_isActive) {
                 if (!RoomClient.IsInRoom) {
                     _modal.SetActive(false);

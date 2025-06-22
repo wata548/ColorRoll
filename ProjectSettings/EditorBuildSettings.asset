@@ -17,6 +17,9 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/JoinRoom.unity
     guid: 6ee219d123eaa2b41b7047fe6278df6a
+  - enabled: 1
+    path: Assets/Scenes/Test.unity
+    guid: 22e79bfcd6b971d4d8c80d93974e2d62
   m_configObjects:
     com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 052faaac586de48259a63d0c4782560b, type: 3}
   m_UseUCBPForAssetBundles: 0

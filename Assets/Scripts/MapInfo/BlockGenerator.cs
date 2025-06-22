@@ -49,7 +49,7 @@ namespace MapInfo {
             }
         }
         
-        private void SetUp() {
+        public void SetUp() {
 
             int startPos1 = MaxDeepth - Thickness;
             int startPos2 = MaxDeepth + DefaultMapScale;
@@ -90,7 +90,6 @@ namespace MapInfo {
 
         private new void Awake() {
             base.Awake();
-            SetUp();
         }
     }
 }

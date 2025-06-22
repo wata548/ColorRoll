@@ -1,10 +1,12 @@
-﻿using Extensions;
+﻿using System;
+using Extensions;
+using UnityEngine;
 
 namespace Networking.RoomSystem {
     public class NetworkManager: MonoSingleton<NetworkManager> {
 
        //==================================================||Properties 
-        public bool IsHost { get; private set; } = true;
+        [field: SerializeField]public bool IsHost { get; private set; } = true;
         public RoomBase Room { get; private set; }
 
        //==================================================||Unity 

@@ -204,7 +204,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 472635455}
         m_TargetAssemblyTypeName: UI.ClientRoom.RoomModal, Assembly-CSharp
-        m_MethodName: QuitRoom
+        m_MethodName: CloseModal
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}

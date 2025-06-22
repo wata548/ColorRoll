@@ -1,4 +1,5 @@
-﻿using Networking.RoomSystem;
+﻿using Networking.InGame;
+using Networking.RoomSystem;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -33,6 +34,14 @@ namespace UI.Main {
             InteractableUIBase.SetGroup(ButtonGroup, true);
             _modal.SetActive(false);
             _modal.Init();
+        }
+        
+        private void Update() {
+            if (Input.GetKeyDown(KeyCode.Y)) {
+                
+                UdpManager.Start("192.168.1.22");
+                SceneManager.LoadScene("Test");
+            }
         }
     }
 }

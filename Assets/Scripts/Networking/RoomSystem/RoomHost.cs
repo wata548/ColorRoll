@@ -3,6 +3,7 @@ using System.Net.Sockets;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Networking.InGame;
 using Newtonsoft.Json;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -12,7 +13,7 @@ namespace Networking.RoomSystem {
     public class RoomHost: RoomBase {
 
         //==================================================||Constant      
-        public const int Port = 54321;
+        public const int Port = 51123;
         
         //==================================================||Fields 
         public static string RoomName;
@@ -49,6 +50,7 @@ namespace Networking.RoomSystem {
 
             IsOpen = false;
             Send(OtherPlayerIp, RoomClient.Port, RoomCommand.Start);
+            UdpManager.Start(OtherPlayerIp);
             SceneManager.LoadScene("Game");
         }
         
@@ -101,6 +103,7 @@ namespace Networking.RoomSystem {
 
         private void SelectOtherPlayer(RoomInfo data) {
 
+            //if already other player exist
             if (!string.IsNullOrWhiteSpace(OtherPlayerIp))
                 return;
             

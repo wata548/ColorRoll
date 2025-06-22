@@ -12,12 +12,7 @@ namespace Networking.InGame {
         public void SetHost(bool isHost = true) =>
             IsHost = isHost;
 
-        protected void Update() {
-            if (!IsHost)
-                return;
-            
-            CameraFocus.Update(gameObject);
-        }
+        
     }
     
     [RequireComponent(typeof(PlayerFSM))]
@@ -27,6 +22,8 @@ namespace Networking.InGame {
         private PlayerFSM _fsm;
         private Rigidbody _rigid;
         private bool _isHost = false;
+
+        public PlayerFSM FSM => _fsm;
 
         public override void Apply(IData data) {
  
@@ -41,7 +38,13 @@ namespace Networking.InGame {
             _fsm = GetComponent<PlayerFSM>();
             _rigid = GetComponent<Rigidbody>();
         }
-    }
+        
+        private void Update() {
 
-    
+            if (!IsHost)
+                return;
+            
+            CameraFocus.Update(gameObject);
+        }
+    }
 }

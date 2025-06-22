@@ -4,6 +4,7 @@ using System.Linq;
 using System.Net;
 using System.Net.Sockets;
 using System.Threading.Tasks;
+using Networking.InGame;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -11,13 +12,15 @@ namespace Networking.RoomSystem {
     public class RoomClient: RoomBase {
         
         //==================================================||Constant 
-        public const int Port = 51234;
+        public const int Port = 51122;
         public const float WaitReceiveTime = 1.5f;
         private const int TimeOutCheckInterval = 500;
         
         //==================================================||Fields 
         private static Dictionary<string, (string ip, int port)> _maps;
         private static UdpClient _receiveClient;
+        private static bool _isGameStart = false;
+        
         public static bool IsInRoom { get; private set; } = false;
         public static bool IsOpen { get; private set; } = false;
         
@@ -44,6 +47,15 @@ namespace Networking.RoomSystem {
 
         //==================================================||Methods 
 
+        public static void Start() {
+            if (_isGameStart) {
+                _isGameStart = false;
+                UdpManager.Start(OtherPlayerIp);
+                SceneManager.LoadScene("Game");
+            }
+                
+        }
+        
         public void Close() {
             IsOpen = false;
         }
@@ -102,15 +114,17 @@ namespace Networking.RoomSystem {
             sendClient.Close();
         }
         
-        private async Task Receive() {
+        private Task Receive() {
 
             var target = new IPEndPoint(IPAddress.Any, Port);
             
             while (true) {
 
+                Debug.Log($"ready to connet {IsInRoom}");
                 var receiveRawData = _receiveClient.Receive(ref target);
                 var receiveData = ToData(receiveRawData);
-
+                Debug.Log($"Get data {receiveData.Command} {IsOpen}-{IsInRoom}");
+                
                 if (!IsOpen)
                     continue;
                 
@@ -119,6 +133,7 @@ namespace Networking.RoomSystem {
                         _maps.TryAdd(receiveData.Name, (receiveData.Ip, receiveData.Port));
                         break;
                     case RoomCommand.Allow:
+                        Debug.Log($"enter {OtherPlayerIp}'s room");
                         if (string.IsNullOrWhiteSpace(OtherPlayerIp)) {
 
                             IsInRoom = true;
@@ -132,10 +147,13 @@ namespace Networking.RoomSystem {
                         if (!IsInRoom)
                             break;
                         Close();
-                        SceneManager.LoadScene("Game");
+                        _isGameStart = true;    
                         break;
                 }
+
             }
+
+            return null;
         }
     }
 }

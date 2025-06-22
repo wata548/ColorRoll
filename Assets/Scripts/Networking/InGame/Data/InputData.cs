@@ -7,11 +7,11 @@ namespace Networking.InGame {
         public readonly Actions GetKey;
         public readonly Actions GetKeyDown;
         public readonly Actions GetKeyUp;
-        public readonly Quaternion ViewDirection;
+        public readonly JsonQuaternion ViewDirection;
 
         public InputData(Quaternion view, InputControl input) {
             
-            ViewDirection   = view.normalized;
+            ViewDirection   = new(view.normalized);
             GetKey          = input.GetKey;
             GetKeyDown      = input.GetKeyDown;
             GetKeyUp        = input.GetKeyUp;

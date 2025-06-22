@@ -5165,7 +5165,7 @@ GameObject:
   - component: {fileID: 3841836171008089979}
   - component: {fileID: 8958256146491926442}
   m_Layer: 0
-  m_Name: HCFX_Hit_03
+  m_Name: HitEffect
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

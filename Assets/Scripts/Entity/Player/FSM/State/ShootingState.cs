@@ -36,7 +36,8 @@ namespace Player {
                         ?? 0;
             chargingState.InitLevel();
 
-            _direction = machine.Data.ViewDirection
+            var realDirection = (Quaternion)machine.Data.ViewDirection;
+            _direction = realDirection
                 .YAxis()
                 .Direction();
         }

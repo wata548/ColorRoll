@@ -41,7 +41,8 @@ namespace Player {
                     result += direction.Value;
             }
 
-            var view = Quaternion.Euler(0, machine.Data.ViewDirection.eulerAngles.y, 0);
+            var viewDirection = (Quaternion)machine.Data.ViewDirection;
+            var view = Quaternion.Euler(0, viewDirection.eulerAngles.y, 0);
             machine.Rigid.linearVelocity = (view * result).normalized;
         }
     }

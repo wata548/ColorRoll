@@ -33,14 +33,18 @@ namespace Test {
 
         [SerializeField] private MeshRenderer _renderer;
         [SerializeField] private Material _brush;
-        [SerializeField] private GameObject _target1; 
-        [SerializeField] private GameObject _target2; 
+        private GameObject _target1; 
+        private GameObject _target2; 
         
         private RenderTexture _tex;
         private Vector2 _tempPos1 = Vector2.zero;
         private Vector2 _tempPos2 = Vector2.zero;
 
        //==================================================||Methods 
+
+       public void SetTarget(GameObject a, GameObject b) =>
+           (_target1, _target2) = (a, b);
+       
         private void Fill() {
             
             _brush.SetFloat("_Radius2", 0.002f);
@@ -87,6 +91,9 @@ namespace Test {
         [SerializeField] private Material a;
         private void Update() {
 
+            if (_target1 == null || _target2 == null)
+                return;
+             
             bool needUpdate = false;
             if (Physics.Raycast(_target1.transform.position, Vector3.down, out var hit)) {
                 if (hit.transform.CompareTag("Paintable")) {

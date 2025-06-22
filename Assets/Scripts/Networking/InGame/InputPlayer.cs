@@ -4,7 +4,6 @@ using UnityEngine;
 
 namespace Networking.InGame {
     
-    [RequireComponent(typeof(PlayerFSM))]
     public class InputPlayer : PlayerBase {
 
         private Rigidbody _rigid;
@@ -42,8 +41,8 @@ namespace Networking.InGame {
             var particle = IsHost ? gameData.HostChargeLevel : gameData.ClientChargeLevel;
             var isBreak = _isBreak ? gameData.HostBreak : gameData.ClientBreak; 
             
-            _rigid.linearVelocity = velocity;
-            transform.position = position;
+            _rigid.linearVelocity = (Vector3)velocity;
+            transform.position = (Vector3)position;
 
             //break process
             if (isBreak ^ _isBreak) {
@@ -63,6 +62,14 @@ namespace Networking.InGame {
                 else
                     _chargeParticles[particle].Stop();
             }
+        }
+        
+        private void Update() {
+
+            if (IsHost)
+                return;
+            
+            CameraFocus.Update(gameObject);
         }
     }    
 }
