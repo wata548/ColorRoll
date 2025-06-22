@@ -29,10 +29,12 @@ namespace Player {
         public override void Enter(PlayerState previousState, PlayerFSM machine) {
 
             _startTime = Time.time;
-            
-            _curLevel = (machine.StateMatch[PlayerState.Charging] as ChargingState)
+
+            var chargingState = machine.StateMatch[PlayerState.Charging] as ChargingState;
+            _curLevel = chargingState
                         ?.ChargeLevel 
                         ?? 0;
+            chargingState.InitLevel();
 
             _direction = machine.Data.ViewDirection
                 .YAxis()
@@ -49,6 +51,11 @@ namespace Player {
 
         public override void Update(PlayerFSM machine) {
 
+            foreach (var particle in machine.ChargeParticles) {
+                particle.transform.localPosition = Vector3.zero;
+                particle.transform.rotation = Quaternion.identity;
+            }
+            
             if (Progress >= 1) {
                 
                 machine.Change(PlayerState.Working);

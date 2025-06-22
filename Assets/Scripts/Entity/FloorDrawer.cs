@@ -1,13 +1,15 @@
 ﻿using System;
+using System.Text;
 using Extensions;
 using UnityEngine;
 using UnityEngine.Experimental.Rendering;
+using Object = UnityEngine.Object;
 
 namespace Test {
     public class FloorDrawer: MonoSingleton<FloorDrawer> {
 
        //==================================================||Concstant 
-        private const int TextureDetail = 11;
+        private const int TextureDetail = 13;
 
        //==================================================||Properties 
         public float Player1Radius {
@@ -51,6 +53,23 @@ namespace Test {
 
             RenderTexture.ReleaseTemporary(temp);
         }
+
+        /*public Byte[] ToData() {
+
+            var temp = RenderTexture.active;
+            RenderTexture.active = _tex;
+
+            var data = new Texture2D(_tex.width, _tex.height);
+            //it real RenderTexture.active's data
+            data.ReadPixels(new(0, 0, _tex.width, _tex.height), 0, 0);
+            var result = data.EncodeToPNG();
+            
+            RenderTexture.active = temp;
+            
+            //it didn't free by garbage collector
+            Destroy(data);
+            return result;
+        }*/
         
        //==================================================||Unity 
         private new void Awake() {
@@ -64,6 +83,8 @@ namespace Test {
             Player2Radius = Player2Radius;
         }
 
+
+        [SerializeField] private Material a;
         private void Update() {
 
             bool needUpdate = false;

@@ -11,7 +11,7 @@ namespace Entitty {
 
         protected override void OnDeath() {
             Debug.Log(transform.localPosition);
-            BlockGenerator.Instance.DeletedBlock(transform.position);
+            BlockGenerator.Instance.BreakBlock(transform.position);
             base.OnDeath();
         }
     }

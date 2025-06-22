@@ -1,8 +1,8 @@
 ﻿using InputSystem;
 using UnityEngine;
 
-namespace Networking {
-    public class InputData {
+namespace Networking.InGame {
+    public class InputData: IData {
 
         public readonly Actions GetKey;
         public readonly Actions GetKeyDown;

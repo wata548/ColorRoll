@@ -1,7 +1,4 @@
-﻿using System;
-using Extensions;
-using UnityEngine;
-using UnityEngine.Serialization;
+﻿using Extensions;
 
 namespace Networking.RoomSystem {
     public class NetworkManager: MonoSingleton<NetworkManager> {

@@ -4,7 +4,9 @@ using Entitty;
 using UnityEngine;
 using Networking;
 using FSMBase;
+using Networking.InGame;
 using RayFire;
+using UnityEngine.Serialization;
 using PlayerStateBase = FSMBase.StateBase<Player.PlayerState, Player.PlayerFSM>;
 
 namespace Player {
@@ -14,11 +16,8 @@ namespace Player {
     public class PlayerFSM: MonoBehaviour {
         
         //==================================================||Properties            
-        [field: SerializeField] public ParticleSystem Charge1 { get; private set; }
-        [field: SerializeField] public ParticleSystem Charge2 { get; private set; }
-        [field: SerializeField] public ParticleSystem Charge3 { get; private set; }
-        
-        [field: SerializeField] public RayfireRigid Halucination { get; private set; }
+        [field: SerializeField] public ParticleSystem[] ChargeParticles { get; private set; }
+
         public Collider Collider { get; private set; }
         public MeshRenderer Renderer { get; private set; } = null; 
         
@@ -30,6 +29,9 @@ namespace Player {
         public PlayerState CurrentState => Fsm.CurrentState;
         
         //==================================================||Field
+        [SerializeField] private RayfireRigid _breakPrefab;
+        [SerializeField] private ParticleSystem _defaultParticle;
+        
         private int _lastUpdateFrame = -1;
         private List<Damageable> _currentCollision = new();
         
@@ -45,6 +47,22 @@ namespace Player {
         
         //==================================================||Methods 
 
+        public void Break() {
+            Rigid.useGravity = false;
+            Collider.isTrigger = true;
+                        
+            Renderer.enabled = false;
+            Instantiate(_breakPrefab, transform.position, Quaternion.identity)
+                .GetComponent<RayfireRigid>()
+                .Demolish();
+        }
+
+        public void Restore() {
+            Rigid.useGravity = true;
+            Collider.isTrigger = false;
+            Renderer.enabled = true;
+        }
+        
         private void UpdateFsm() {
 
             if (Data == null)
@@ -81,6 +99,10 @@ namespace Player {
 
         private void Update() {
             CollisionListUpdate();
+            var pos = transform.position;
+            pos.y -= 0.1f;
+            _defaultParticle.transform.position = pos;
+            _defaultParticle.transform.rotation = Quaternion.Euler(-90,0,-90);
         }
 
         private void OnCollisionEnter(Collision other) {

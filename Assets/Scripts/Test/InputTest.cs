@@ -1,10 +1,8 @@
-﻿using System;
-using Extensions;
-using Player;
+﻿using Player;
 using UnityEngine;
 using InputSystem;
-using Networking;
 using TMPro;
+using Networking.InGame;
 
 namespace Test {
     

@@ -238,7 +238,6 @@ MonoBehaviour:
     uvE: 0
     uvC: {x: 0.25, y: 0.25}
     uvR: {x: 0.75, y: 0.75}
-    cE: 0
     cC: {r: 0, g: 0, b: 0, a: 0}
   damage:
     en: 0
@@ -251,10 +250,10 @@ MonoBehaviour:
     onDemolition: 1
     onActivation: 0
     byOffset: 0
-    fadeType: 0
-    fadeTime: 5
+    fadeType: 2
+    fadeTime: 1
     lifeType: 4
-    lifeTime: 7
+    lifeTime: 0
     lifeVariation: 3
     sizeFilter: 0
     shardAmount: 5

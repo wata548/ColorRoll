@@ -11,7 +11,6 @@ namespace Player {
 
         //==================================================||Fields
         private float _startTime = 0;
-        private List<ParticleSystem> _particles = null;
         
        //==================================================||Properties 
         public int ChargeLevel { get; private set; }= -1;
@@ -20,16 +19,12 @@ namespace Player {
         public ChargingState(PlayerState key) : base(key) {}
         
         //==================================================||Methods 
+
+        public void InitLevel() => ChargeLevel = -1;
+        
         public override void Enter(PlayerState previousState, PlayerFSM machine) {
             _startTime = Time.time;
             ChargeLevel = -1;
-
-            if (_particles == null) {
-                _particles = new();
-                _particles.Add(machine.Charge1);
-                _particles.Add(machine.Charge2);
-                _particles.Add(machine.Charge3);
-            }
         }
 
         public override void Exit(PlayerState nextState, PlayerFSM machine) { }
@@ -37,25 +32,26 @@ namespace Player {
         public override void Update(PlayerFSM machine) {
             if ((machine.Data.GetKey & Actions.Charge) == Actions.None) {
                 
-                foreach (var particle in _particles) 
+                foreach (var particle in machine.ChargeParticles) 
                     particle.Stop();
                 machine.Change(PlayerState.Shooting);
                 return;
             }
 
-            machine.Charge1.gameObject.transform.position = machine.transform.position;
-            machine.Charge2.gameObject.transform.position = machine.transform.position;
-            machine.Charge3.gameObject.transform.position = machine.transform.position;
+            foreach (var particle in machine.ChargeParticles) {
+                particle.transform.localPosition = Vector3.zero;
+                particle.transform.rotation = Quaternion.identity;
+            }
 
             float progress = Time.time - _startTime;
             if (ChargeLevel + 1 < LevelTime.Length && progress >= LevelTime[ChargeLevel + 1]) {
                 if (ChargeLevel >= 0 && ChargeLevel < LevelTime.Length) {
-                    _particles[ChargeLevel].Stop();
+                    machine.ChargeParticles[ChargeLevel].Stop();
                 }
                 
                 ChargeLevel++;
                 if (ChargeLevel >= 0 && ChargeLevel < LevelTime.Length) {
-                    _particles[ChargeLevel].Play();
+                    machine.ChargeParticles[ChargeLevel].Play();
                 }
             }
             

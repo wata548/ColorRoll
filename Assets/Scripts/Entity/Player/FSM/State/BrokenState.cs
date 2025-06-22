@@ -12,21 +12,13 @@ namespace Player {
         
         public override void Enter(PlayerState previousState, PlayerFSM machine) {
 
-            machine.Rigid.useGravity = false;
-            machine.Collider.isTrigger = true;
-            
             _enterTime = Time.time;
             
-            machine.Renderer.enabled = false;
-            GameObject.Instantiate(machine.Halucination, machine.transform.position, Quaternion.identity)
-                .GetComponent<RayfireRigid>()
-                .Demolish();
+            machine.Break();
         }
 
         public override void Exit(PlayerState nextState, PlayerFSM machine) {
-            machine.Rigid.useGravity = true;
-            machine.Collider.isTrigger = false;
-            machine.Renderer.enabled = true;
+            machine.Restore();
         }
 
         public override void Update(PlayerFSM machine) {
