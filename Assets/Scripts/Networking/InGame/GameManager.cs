@@ -26,10 +26,10 @@ namespace Networking.InGame {
         private void Start() {
             _isHost = NetworkManager.Instance.IsHost;
             
+            BlockGenerator.Instance.SetUp();
             if (_isHost) {
                 _hostPlayer = Instantiate(_calculatePlayer1);
                 _clientPlayer = Instantiate(_calculatePlayer2);
-                BlockGenerator.Instance.SetUp();
             }
             else {
                 _hostPlayer = Instantiate(_inputPlayer1);
@@ -44,33 +44,48 @@ namespace Networking.InGame {
             FloorDrawer.Instance.SetTarget(_hostPlayer.gameObject, _clientPlayer.gameObject);
         }
 
+
+        private float _lastSend = 0;
+        private const float SendInterval  = 0.1f;
         private void Update() {
 
             var input = new InputData(CameraFocus.CurRotation, _input);
+            var context = _isHost ? RoomHost.Context : RoomClient.Context;
             
-            if (UdpManager.CurData != null) {
+            Debug.Log(context);
+            if (!string.IsNullOrWhiteSpace(context)) {
+                
                 if (_isHost) {
-                    _clientPlayer.Apply(UdpManager.CurData);
-                    _hostPlayer.Apply(input);
+                    _clientPlayer.Apply(context);
+                    _hostPlayer.Apply(input.ToString());
                 }
                 else {
-                    _hostPlayer.Apply(UdpManager.CurData);
-                    _clientPlayer.Apply(UdpManager.CurData);
-                    BlockGenerator.Instance.Apply(UdpManager.CurData);
+
+                    if (Time.time - _lastSend >= SendInterval) {
+                        _lastSend = Time.time;
+                        _hostPlayer.Apply(context);
+                        _clientPlayer.Apply(context);
+                        BlockGenerator.Instance.Apply(context);    
+                    }
+                    
                 }
             }
-
+            
             if (_isHost) {
                 
                 var curData = new GameData(
                     (_hostPlayer as CalculatePlayer)!.FSM,
                     (_clientPlayer as CalculatePlayer)!.FSM
                 );
-                
-                UdpManager.Send(curData);
+
+                (NetworkManager.Instance.Room as RoomHost)!.SendData(curData.ToString());
+                //UdpManager.Send(curData);
             }
-            else 
-                UdpManager.Send(input);
+            else {
+                
+                (NetworkManager.Instance.Room as RoomClient)!.SendData(input.ToString());
+                //UdpManager.Send(input);
+            }
         }
     }
 }

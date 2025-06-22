@@ -6,9 +6,9 @@ namespace Networking.InGame {
     
     public class InputPlayer : PlayerBase {
 
-        private Rigidbody _rigid;
         [SerializeField] private ParticleSystem[] _chargeParticles;
         
+        [SerializeField] private Rigidbody _rigid;
         [SerializeField] private RayfireRigid _breakPrefab;
         [SerializeField] private Collider _collider;
         [SerializeField] private MeshRenderer _renderer;
@@ -31,11 +31,10 @@ namespace Networking.InGame {
         
         private bool _isBreak = false;
         
-        public override void Apply(IData data) {
+        public override void Apply(string data) {
 
-            if (data is not GameData gameData)
-                return;
-
+            var gameData = new GameData(data);
+            
             var velocity = IsHost ? gameData.HostVelocity : gameData.ClientVelocity;
             var position = IsHost ? gameData.HostPosition : gameData.ClientPosition;
             var particle = IsHost ? gameData.HostChargeLevel : gameData.ClientChargeLevel;
@@ -60,7 +59,7 @@ namespace Networking.InGame {
                         _chargeParticles[particle].Play();
                 }
                 else
-                    _chargeParticles[particle].Stop();
+                    _chargeParticles[i].Stop();
             }
         }
         

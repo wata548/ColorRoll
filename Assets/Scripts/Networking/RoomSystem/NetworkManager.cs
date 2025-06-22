@@ -1,14 +1,14 @@
 ﻿using System;
 using Extensions;
+using Networking.InGame;
 using UnityEngine;
 
 namespace Networking.RoomSystem {
     public class NetworkManager: MonoSingleton<NetworkManager> {
 
        //==================================================||Properties 
-        [field: SerializeField]public bool IsHost { get; private set; } = true;
+        public bool IsHost { get; private set; } = true;
         public RoomBase Room { get; private set; }
-
        //==================================================||Unity 
         private new void Awake() {
             

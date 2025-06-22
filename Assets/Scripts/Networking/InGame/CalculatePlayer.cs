@@ -7,7 +7,7 @@ namespace Networking.InGame {
 
         public bool IsHost { get; private set; } = false;
         
-        public abstract void Apply(IData data);
+        public abstract void Apply(string data);
 
         public void SetHost(bool isHost = true) =>
             IsHost = isHost;
@@ -25,18 +25,16 @@ namespace Networking.InGame {
 
         public PlayerFSM FSM => _fsm;
 
-        public override void Apply(IData data) {
- 
-             if (data is not InputData inputData)
-                 return;
+        public override void Apply(string data) {
              
-             _fsm.SetInputData(inputData);
+             _fsm.SetInputData(new InputData(data));
         }       
         
         private void Awake() {
             
             _fsm = GetComponent<PlayerFSM>();
             _rigid = GetComponent<Rigidbody>();
+            _fsm.Change(PlayerState.Working);
         }
         
         private void Update() {

@@ -157,6 +157,7 @@ MonoBehaviour:
   - {fileID: 2056114324433049362}
   - {fileID: 4262990399358006627}
   - {fileID: 5042704195562307823}
+  _rigid: {fileID: 3289262613350395560}
   _breakPrefab: {fileID: 2859796455930448673, guid: f8839511069fc824ab2d46ed5cfd6707, type: 3}
   _collider: {fileID: 6949037335960608449}
   _renderer: {fileID: 6226756245218852314}

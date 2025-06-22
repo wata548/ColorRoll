@@ -1,4 +1,5 @@
-﻿using Networking.InGame;
+﻿using System;
+using Networking.InGame;
 using Networking.RoomSystem;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -8,7 +9,11 @@ namespace UI.Main {
 
         [SerializeField] private MakeRoomModal _modal;
         public const string ButtonGroup = "MainButtons";
-        
+
+        private void Awake() {
+            Application.runInBackground = true;
+        }
+
         public void Quit() {
             Application.Quit();
         }
@@ -34,14 +39,6 @@ namespace UI.Main {
             InteractableUIBase.SetGroup(ButtonGroup, true);
             _modal.SetActive(false);
             _modal.Init();
-        }
-        
-        private void Update() {
-            if (Input.GetKeyDown(KeyCode.Y)) {
-                
-                UdpManager.Start("192.168.1.22");
-                SceneManager.LoadScene("Test");
-            }
         }
     }
 }

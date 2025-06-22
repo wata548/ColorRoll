@@ -4999,6 +4999,7 @@ MonoBehaviour:
   - {fileID: 6540754025098525148}
   - {fileID: 3573363969721601180}
   - {fileID: 7526018183280223320}
+  _rigid: {fileID: 4170109437877256185}
   _breakPrefab: {fileID: 2859796455930448673, guid: f8839511069fc824ab2d46ed5cfd6707, type: 3}
   _collider: {fileID: 7488687540625047784}
   _renderer: {fileID: 4487390330379407538}

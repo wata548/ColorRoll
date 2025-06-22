@@ -1,4 +1,6 @@
-﻿using Newtonsoft.Json;
+﻿using System.Collections.Generic;
+using CSVData;
+using Newtonsoft.Json;
 
 namespace Networking.InGame {
 
@@ -20,7 +22,7 @@ namespace Networking.InGame {
                 GameData => DataType.CurState,
                 InputData => DataType.Input
             };
-            Data = JsonConvert.SerializeObject(data);
+            Data = data.ToString();
         }
 
     }

@@ -3,15 +3,13 @@ using UnityEngine;
 
 namespace MapInfo {
     public partial class BlockGenerator {
-        public void Apply(IData data) {
-            if (data is not GameData gameData)
-                return;
-            
+        public void Apply(string data) {
+            var gameData = new GameData(data);
             foreach (var @break in gameData.BreakBlocks) {
                 BreakBlock((Vector3)@break);
             }
 
-            for (int i = 0; i < _map.GetLength(0); i++) {
+            /*for (int i = 0; i < _map.GetLength(0); i++) {
                 for (int j = 0; j < _map.GetLength(1); j++) {
                     if (_map[i, j] == gameData.Map[i, j]) 
                         continue;
@@ -29,7 +27,7 @@ namespace MapInfo {
 
                     _map[i, j] = gameData.Map[i, j];
                 }
-            }
+            }*/
         }
     }
 }

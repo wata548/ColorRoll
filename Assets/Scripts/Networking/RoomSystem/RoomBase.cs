@@ -8,6 +8,7 @@ namespace Networking.RoomSystem {
     
     public abstract class RoomBase {
         
+        
         public static Byte[] ToByte(RoomInfo roominfo) {
             
             var json = JsonConvert.SerializeObject(roominfo);

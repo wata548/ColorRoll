@@ -21,6 +21,7 @@ namespace Networking.RoomSystem {
         private static UdpClient _receiveClient = null;
 
         public static bool IsOpen { get; private set; } = false;
+        public static string Context { get; private set; } = "";
         
         //==================================================||Properties 
         public static string OtherPlayerIp { get; private set; } = "";
@@ -43,14 +44,26 @@ namespace Networking.RoomSystem {
         
         //==================================================||Methods 
 
+        public void SendData(string context) {
+            var sendClient = new UdpClient();
+            var target = new IPEndPoint(IPAddress.Parse(OtherPlayerIp), RoomClient.Port);
+                        
+            var data = new RoomInfo(RoomCommand.Data, GetIP() , Port, context);
+            var sendData = ToByte(data);
+                        
+            sendClient.Send(sendData, sendData.Length, target);
+                        
+            sendClient.Close();   
+        }
+        
         public void Start() {
             
             if(!OtherPlayerReady)
                 return;
 
-            IsOpen = false;
+            //IsOpen = false;
             Send(OtherPlayerIp, RoomClient.Port, RoomCommand.Start);
-            UdpManager.Start(OtherPlayerIp);
+            //UdpManager.Start(OtherPlayerIp, true);
             SceneManager.LoadScene("Game");
         }
         
@@ -92,6 +105,9 @@ namespace Networking.RoomSystem {
                         break;
                     case RoomCommand.Start:
                         OtherPlayerReady = !OtherPlayerReady;
+                        break;
+                    case RoomCommand.Data:
+                        Context = receiveData.Name;
                         break;
                     default:
                         continue;

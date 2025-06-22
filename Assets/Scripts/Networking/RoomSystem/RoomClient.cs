@@ -5,6 +5,7 @@ using System.Net;
 using System.Net.Sockets;
 using System.Threading.Tasks;
 using Networking.InGame;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -23,6 +24,7 @@ namespace Networking.RoomSystem {
         
         public static bool IsInRoom { get; private set; } = false;
         public static bool IsOpen { get; private set; } = false;
+        public static string Context { get; private set; } = "";
         
         //==================================================||Properties
         public List<(string, string)> FindRoom => _maps
@@ -47,13 +49,24 @@ namespace Networking.RoomSystem {
 
         //==================================================||Methods 
 
+        public void SendData(string context) {
+            
+            var sendClient = new UdpClient();
+            var target = new IPEndPoint(IPAddress.Parse(OtherPlayerIp), RoomHost.Port);
+                    
+            var data = new RoomInfo(RoomCommand.Data, GetIP(), Port, context);
+            var rawData = ToByte(data);
+            sendClient.Send(rawData, rawData.Length, target);
+                                
+            sendClient.Close();
+        }
+        
         public static void Start() {
             if (_isGameStart) {
                 _isGameStart = false;
-                UdpManager.Start(OtherPlayerIp);
+                //UdpManager.Start(OtherPlayerIp, false);
                 SceneManager.LoadScene("Game");
             }
-                
         }
         
         public void Close() {
@@ -146,11 +159,12 @@ namespace Networking.RoomSystem {
                     case RoomCommand.Start:
                         if (!IsInRoom)
                             break;
-                        Close();
                         _isGameStart = true;    
                         break;
+                    case RoomCommand.Data:
+                        Context = receiveData.Name;
+                        break;
                 }
-
             }
 
             return null;

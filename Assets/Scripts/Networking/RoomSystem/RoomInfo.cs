@@ -6,7 +6,8 @@
         JoinRequest,
         Allow,
         Quit,
-        Start
+        Start,
+        Data
     }
     
     public class RoomInfo {
