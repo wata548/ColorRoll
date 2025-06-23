@@ -1,8 +1,8 @@
-﻿Action,Key
-Actions,KeyCode
-Front,W
-Back,S
-Left,A
-Right,D
-Charge,LeftShift
-UseItem,Q
+"Action","Key"
+,"InputSystem.Actions","UnityEngine.KeyCode"
+"Front","W"
+"Back","E"
+"Left","Z"
+"Right","H"
+"Charge","F"
+"UseItem","D"

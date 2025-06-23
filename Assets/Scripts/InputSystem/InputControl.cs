@@ -108,10 +108,24 @@ namespace InputSystem {
             path = Path.Combine(Application.streamingAssetsPath, KeyBindFolder);
             File.WriteAllText(path, CSV.Serialize(_keyBind));
         }
+
+        public static void Save(Dictionary<Actions, KeyCode> data, string path) {
+
+            var list = data
+                .Select(element => new KeyBindRow(element))
+                .ToList();
+            path = Path.Combine(Application.streamingAssetsPath, KeyBindFolder, path);
+            File.WriteAllText(path, CSV.Serialize(list));
+        }
         
         private class KeyBindRow {
             public Actions Action { get; private set; }
             public KeyCode Key { get; private set; }
+
+            public KeyBindRow(){}
+            
+            public KeyBindRow(KeyValuePair<Actions, KeyCode> data) =>
+                (Action, Key) = (data.Key, data.Value);
             
             public static implicit operator KeyCode(KeyBindRow target) =>
                 target.Key;

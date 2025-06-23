@@ -9,7 +9,6 @@ namespace UI.Main {
         [Header("Target")]
         [SerializeField] private TMP_Text _context;
         [SerializeField] private GameObject _object;
-        [FormerlySerializedAs("_addScale")]
         [Space]
         [Header("Parameter")]
         [SerializeField] private float _addScaleRatio;
