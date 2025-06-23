@@ -1,6 +1,7 @@
 ﻿using Extensions;
 using UnityEngine;
 using FSMBase;
+using Unity.Mathematics.Geometry;
 
 namespace Player {
     public class ShootingState: StateBase<PlayerState, PlayerFSM> {
@@ -34,6 +35,7 @@ namespace Player {
             _curLevel = chargingState
                         ?.ChargeLevel 
                         ?? 0;
+            _curLevel = Mathf.Max(0, _curLevel);
             chargingState.InitLevel();
 
             var realDirection = (Quaternion)machine.Data.ViewDirection;

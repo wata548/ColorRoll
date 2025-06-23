@@ -11,19 +11,26 @@ namespace MapInfo {
         private const int Thickness = 2;
         private const int MaxDeepth = 10;
         private const float Height = 0.5f;
+        private const float BreakListClearInterval = 1f;
 
         //==================================================||Properties        
         public List<Vector3> Break {
             get {
+
                 var temp = _break;
-                _break = new();
+                if (Time.time - _lastUpdate >= BreakListClearInterval) {
+                    _break = new();
+                    _lastUpdate = Time.time;
+                }
                 return temp;
             }
         }
         public MapState[,] Map => _map;
 
         public int BreakCount { get; private set; } = 0;
-       //==================================================||Fields 
+        //==================================================||Fields 
+
+        private float _lastUpdate = -1;
         private List<Vector3> _break = new();
 
         private Dictionary<Vector3, GameObject> _blocks = new();

@@ -61,11 +61,11 @@ namespace Networking.InGame {
                 }
                 else {
 
+                    _hostPlayer.Apply(context);
+                    BlockGenerator.Instance.Apply(context);    
                     if (Time.time - _lastSend >= SendInterval) {
                         _lastSend = Time.time;
-                        _hostPlayer.Apply(context);
                         _clientPlayer.Apply(context);
-                        BlockGenerator.Instance.Apply(context);    
                     }
                     
                 }
