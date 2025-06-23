@@ -14,6 +14,9 @@ namespace UI.Main {
             Application.runInBackground = true;
         }
 
+        public void TutorialScene() =>
+            SceneManager.LoadScene("TutorialScence");
+        
         public void Quit() {
             Application.Quit();
         }

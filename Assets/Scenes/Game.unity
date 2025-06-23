@@ -26,7 +26,7 @@ RenderSettings:
   m_AmbientIntensity: 1
   m_AmbientMode: 0
   m_SubtractiveShadowColor: {r: 0.42, g: 0.478, b: 0.627, a: 1}
-  m_SkyboxMaterial: {fileID: 10304, guid: 0000000000000000f000000000000000, type: 0}
+  m_SkyboxMaterial: {fileID: 2100000, guid: 1f7b9a7050b46ca42919a970c1419e0a, type: 2}
   m_HaloStrength: 0.5
   m_FlareStrength: 1
   m_FlareFadeSpeed: 3
@@ -653,7 +653,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _renderer: {fileID: 1308739588}
   _brush: {fileID: 2100000, guid: f4bdf58732d645f43a94184e87f6d27e, type: 2}
-  a: {fileID: 0}
 --- !u!1 &1517074903
 GameObject:
   m_ObjectHideFlags: 0

@@ -88,7 +88,6 @@ namespace Test {
         }
 
 
-        [SerializeField] private Material a;
         private void Update() {
 
             if (_target1 == null || _target2 == null)

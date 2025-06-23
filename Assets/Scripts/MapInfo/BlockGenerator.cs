@@ -20,8 +20,9 @@ namespace MapInfo {
                 return temp;
             }
         }
-        public MapState[,] Map => _map; 
-        
+        public MapState[,] Map => _map;
+
+        public int BreakCount { get; private set; } = 0;
        //==================================================||Fields 
         private List<Vector3> _break = new();
 
@@ -36,6 +37,8 @@ namespace MapInfo {
         ];
 
         public void BreakBlock(Vector3 pos) {
+
+            BreakCount++;
             
             _break.Add(pos);
             
